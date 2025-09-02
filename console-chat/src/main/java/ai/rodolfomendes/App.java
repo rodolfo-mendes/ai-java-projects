@@ -1,5 +1,8 @@
 package ai.rodolfomendes;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 
@@ -19,10 +22,18 @@ public class App {
                 .think(false)
                 .build();
 
-        String userMessage = "Say hello";
-        System.out.printf("User: %s%n", userMessage);
-        String aiMessage = chatModel.chat("Say hello");
-        System.out.printf("AI: %s%n", aiMessage);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+            while (true) {
+                System.out.println("Type your question: ");
+                String question = br.readLine();
+                String aiMessage = chatModel.chat(question);
+                System.out.println();
+                System.out.println("AI:");
+                System.out.println(aiMessage);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
 
         System.out.println("*** END ***");
     }
