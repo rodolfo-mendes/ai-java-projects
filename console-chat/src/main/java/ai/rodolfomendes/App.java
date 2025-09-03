@@ -16,12 +16,25 @@ public class App {
     public static void main(String[] args) {
         System.out.printf("*** Starting chat with model: %s ***%n", MODEL_NAME);
 
+        ChatModel chatModel = buildChatModel();
+
+        doChat(chatModel);
+
+        System.out.println("*** END ***");
+    }
+
+    private static ChatModel buildChatModel() {
         ChatModel chatModel = OllamaChatModel.builder()
                 .baseUrl(BASE_URL)
                 .modelName(MODEL_NAME)
                 .think(false)
                 .build();
+                
+        return chatModel;
+    }
 
+    // The chat logic depends only on the ChatModel interface
+    private static void doChat(ChatModel chatModel) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 System.out.println("Type your question: ");
@@ -34,7 +47,5 @@ public class App {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-
-        System.out.println("*** END ***");
     }
 }
