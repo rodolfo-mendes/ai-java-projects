@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.openai.OpenAiChatModel;
 
 /**
  * Hello world!
@@ -14,23 +15,47 @@ public class App {
     final static String BASE_URL = "http://localhost:11434";
 
     public static void main(String[] args) {
-        System.out.printf("*** Starting chat with model: %s ***%n", MODEL_NAME);
+        System.out.println("program started ...");
 
-        ChatModel chatModel = buildChatModel();
+        ChatModel chatModel = buildChatModel(parseModelName(args));
+
+        System.out.println("*** Starting chat ***");
+        System.out.printf("Provider: %s%n", chatModel.provider().name());
+        System.out.printf("Model: %s%n", chatModel.defaultRequestParameters().modelName());
 
         doChat(chatModel);
 
         System.out.println("*** END ***");
     }
 
-    private static ChatModel buildChatModel() {
-        ChatModel chatModel = OllamaChatModel.builder()
+    private static String parseModelName(String[] args) {
+        if (args == null || args.length == 0) {
+            return "ollama";
+        }
+
+        return args[0];
+    }
+
+    private static ChatModel buildChatModel(String provider) {
+        if ("openai".equalsIgnoreCase(provider)) {
+            String openAiApiKey = System.getenv("OPENAI_KEY");
+
+            if (openAiApiKey == null || openAiApiKey.isBlank()) {
+                throw new IllegalArgumentException("Open AI API Key not found.");
+            }
+
+            return OpenAiChatModel.builder()
+                .apiKey(openAiApiKey)
+                .modelName("gpt-5-nano")
+                .build();
+        }
+
+        // local Ollama is our default provider
+        return OllamaChatModel.builder()
                 .baseUrl(BASE_URL)
                 .modelName(MODEL_NAME)
                 .think(false)
                 .build();
-                
-        return chatModel;
     }
 
     // The chat logic depends only on the ChatModel interface
