@@ -13,6 +13,9 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 public class App {
     final static String MODEL_NAME = "gemma3:1b";
     final static String BASE_URL = "http://localhost:11434";
+    final static Double GPT_TEMPERATURE = 1.0;
+    final static Integer GPT_MAX_COMPLETION_TOKENS = 10_000;
+
 
     public static void main(String[] args) {
         System.out.println("program started ...");
@@ -46,7 +49,9 @@ public class App {
 
             return OpenAiChatModel.builder()
                 .apiKey(openAiApiKey)
-                .modelName("gpt-5-nano")
+                .modelName("gpt-4.1-nano")
+                .temperature(GPT_TEMPERATURE)
+                .maxCompletionTokens(GPT_MAX_COMPLETION_TOKENS)
                 .build();
         }
 
