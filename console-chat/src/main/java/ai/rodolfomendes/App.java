@@ -2,8 +2,14 @@ package ai.rodolfomendes;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 
@@ -11,10 +17,11 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
  * Hello world!
  */
 public class App {
-    final static String MODEL_NAME = "gemma3:1b";
-    final static String BASE_URL = "http://localhost:11434";
-    final static Double GPT_TEMPERATURE = 1.0;
-    final static Integer GPT_MAX_COMPLETION_TOKENS = 10_000;
+    final static String OLLAMA_MODEL_NAME = "gemma3:1b";
+    final static String OLLAMA_BASE_URL = "http://localhost:11434";
+    final static Double OPENAI_TEMPERATURE = 1.0;
+    final static Integer OPENAI_MAX_COMPLETION_TOKENS = 10_000;
+    final static String OPENAI_MODEL_NAME = "gpt-4.1-nano";
 
 
     public static void main(String[] args) {
@@ -49,16 +56,16 @@ public class App {
 
             return OpenAiChatModel.builder()
                 .apiKey(openAiApiKey)
-                .modelName("gpt-4.1-nano")
-                .temperature(GPT_TEMPERATURE)
-                .maxCompletionTokens(GPT_MAX_COMPLETION_TOKENS)
+                .modelName(OPENAI_MODEL_NAME)
+                .temperature(OPENAI_TEMPERATURE)
+                .maxCompletionTokens(OPENAI_MAX_COMPLETION_TOKENS)
                 .build();
         }
 
         // local Ollama is our default provider
         return OllamaChatModel.builder()
-                .baseUrl(BASE_URL)
-                .modelName(MODEL_NAME)
+                .baseUrl(OLLAMA_BASE_URL)
+                .modelName(OLLAMA_MODEL_NAME)
                 .think(false)
                 .build();
     }
@@ -66,13 +73,21 @@ public class App {
     // The chat logic depends only on the ChatModel interface
     private static void doChat(ChatModel chatModel) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+            List<ChatMessage> messages = new ArrayList<>();
+
             while (true) {
                 System.out.println("Type your question: ");
+
                 String question = br.readLine();
-                String aiMessage = chatModel.chat(question);
+                messages.add(UserMessage.from(question));
+
+                ChatResponse response = chatModel.chat(messages);
+
+                AiMessage aiMessage = response.aiMessage();
+                
                 System.out.println();
                 System.out.println("AI:");
-                System.out.println(aiMessage);
+                System.out.println(aiMessage.text());
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
