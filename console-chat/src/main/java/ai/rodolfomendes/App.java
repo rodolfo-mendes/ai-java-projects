@@ -2,16 +2,17 @@ package ai.rodolfomendes;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.store.memory.chat.InMemoryChatMemoryStore;
 
 /**
  * Hello world!
@@ -73,17 +74,22 @@ public class App {
     // The chat logic depends only on the ChatModel interface
     private static void doChat(ChatModel chatModel) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            List<ChatMessage> messages = new ArrayList<>();
+            ChatMemory memory = MessageWindowChatMemory.builder()
+                .id("simple-chat-memory")
+                .maxMessages(100)
+                .chatMemoryStore(new InMemoryChatMemoryStore())
+                .build();           
 
             while (true) {
                 System.out.println("Type your question: ");
 
-                String question = br.readLine();
-                messages.add(UserMessage.from(question));
+                ChatMessage userMessage = UserMessage.from(br.readLine());
+                memory.add(userMessage);
 
-                ChatResponse response = chatModel.chat(messages);
+                ChatResponse response = chatModel.chat(memory.messages());
 
                 AiMessage aiMessage = response.aiMessage();
+                memory.add(aiMessage);
                 
                 System.out.println();
                 System.out.println("AI:");
