@@ -29,14 +29,14 @@ public class App {
         System.out.println("program started ...");
 
         ChatModel chatModel = buildChatModel(parseModelName(args));
+       
+        ChatMemory memory = MessageWindowChatMemory.builder()
+                .id("simple-chat-memory")
+                .maxMessages(100)
+                .chatMemoryStore(new InMemoryChatMemoryStore())
+                .build();
 
-        System.out.println("*** Starting chat ***");
-        System.out.printf("Provider: %s%n", chatModel.provider().name());
-        System.out.printf("Model: %s%n", chatModel.defaultRequestParameters().modelName());
-
-        doChat(chatModel);
-
-        System.out.println("*** END ***");
+        new App().chat(chatModel, memory);        
     }
 
     private static String parseModelName(String[] args) {
@@ -72,18 +72,21 @@ public class App {
     }
 
     // The chat logic depends only on the ChatModel interface
-    private static void doChat(ChatModel chatModel) {
+    private void chat(ChatModel chatModel, ChatMemory memory) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            ChatMemory memory = MessageWindowChatMemory.builder()
-                .id("simple-chat-memory")
-                .maxMessages(100)
-                .chatMemoryStore(new InMemoryChatMemoryStore())
-                .build();           
+            System.out.println("*** Starting chat ***");
+            System.out.printf("Provider: %s%n", chatModel.provider().name());
+            System.out.printf("Model: %s%n%n", chatModel.defaultRequestParameters().modelName());
 
             while (true) {
                 System.out.println("Type your question: ");
 
-                ChatMessage userMessage = UserMessage.from(br.readLine());
+                String userInput = br.readLine();
+                if (userInput.equalsIgnoreCase("/BYE")) {
+                    break;
+                }
+
+                ChatMessage userMessage = UserMessage.from();
                 memory.add(userMessage);
 
                 ChatResponse response = chatModel.chat(memory.messages());
@@ -95,6 +98,8 @@ public class App {
                 System.out.println("AI:");
                 System.out.println(aiMessage.text());
             }
+
+            System.out.println("*** END ***");
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
