@@ -1,17 +1,13 @@
 package ai.rodolfomendes;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.ChatMessage;
-import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.store.memory.chat.InMemoryChatMemoryStore;
 
 /**
@@ -23,20 +19,22 @@ public class App {
     final static Double OPENAI_TEMPERATURE = 1.0;
     final static Integer OPENAI_MAX_COMPLETION_TOKENS = 10_000;
     final static String OPENAI_MODEL_NAME = "gpt-4.1-nano";
-
-
+  
     public static void main(String[] args) {
         System.out.println("program started ...");
 
-        ChatModel chatModel = buildChatModel(parseModelName(args));
+        //final ChatModel chatModel = buildChatModel(parseModelName(args));
+
+        StreamingChatModel streamingChatModel = buildStreamingChatModel(parseModelName(args));
        
-        ChatMemory memory = MessageWindowChatMemory.builder()
+        final ChatMemory memory = MessageWindowChatMemory.builder()
                 .id("simple-chat-memory")
                 .maxMessages(100)
                 .chatMemoryStore(new InMemoryChatMemoryStore())
                 .build();
 
-        new App().chat(chatModel, memory);        
+        final ChatSession chatSession = new ChatSessionAsync(streamingChatModel, memory);
+        chatSession.chat();       
     }
 
     private static String parseModelName(String[] args) {
@@ -70,38 +68,28 @@ public class App {
                 .think(false)
                 .build();
     }
+    
+    private static StreamingChatModel buildStreamingChatModel(String provider) {
+        if ("openai".equalsIgnoreCase(provider)) {
+            String openAiApiKey = System.getenv("OPENAI_KEY");
 
-    // The chat logic depends only on the ChatModel interface
-    private void chat(ChatModel chatModel, ChatMemory memory) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            System.out.println("*** Starting chat ***");
-            System.out.printf("Provider: %s%n", chatModel.provider().name());
-            System.out.printf("Model: %s%n%n", chatModel.defaultRequestParameters().modelName());
-
-            while (true) {
-                System.out.println("Type your question: ");
-
-                String userInput = br.readLine();
-                if (userInput.equalsIgnoreCase("/BYE")) {
-                    break;
-                }
-
-                ChatMessage userMessage = UserMessage.from();
-                memory.add(userMessage);
-
-                ChatResponse response = chatModel.chat(memory.messages());
-
-                AiMessage aiMessage = response.aiMessage();
-                memory.add(aiMessage);
-                
-                System.out.println();
-                System.out.println("AI:");
-                System.out.println(aiMessage.text());
+            if (openAiApiKey == null || openAiApiKey.isBlank()) {
+                throw new IllegalArgumentException("Open AI API Key not found.");
             }
 
-            System.out.println("*** END ***");
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+            return OpenAiStreamingChatModel.builder()
+                .apiKey(openAiApiKey)
+                .modelName(OPENAI_MODEL_NAME)
+                .temperature(OPENAI_TEMPERATURE)
+                .maxCompletionTokens(OPENAI_MAX_COMPLETION_TOKENS)
+                .build();
         }
+
+        // local Ollama is our default provider
+        return OllamaStreamingChatModel.builder()
+                .baseUrl(OLLAMA_BASE_URL)
+                .modelName(OLLAMA_MODEL_NAME)
+                .think(false)
+                .build();
     }
 }
