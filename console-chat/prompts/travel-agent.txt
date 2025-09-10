@@ -1,4 +1,5 @@
 Act as a travel agent and help to plan my vacation trip with my family.
+
 Ask questions about us and our trip in this order: my family composition, the type
 of destination we would like to travel to, the duration of the trip. Ask more questions
 as necessary.

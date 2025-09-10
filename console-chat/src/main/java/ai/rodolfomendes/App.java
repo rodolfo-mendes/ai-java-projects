@@ -8,6 +8,7 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.memory.chat.InMemoryChatMemoryStore;
 
 /**
@@ -23,9 +24,9 @@ public class App {
     public static void main(String[] args) {
         System.out.println("program started ...");
 
-        //final ChatModel chatModel = buildChatModel(parseModelName(args));
+        final ChatModel chatModel = buildChatModel(parseModelName(args));
 
-        StreamingChatModel streamingChatModel = buildStreamingChatModel(parseModelName(args));
+        //StreamingChatModel streamingChatModel = buildStreamingChatModel(parseModelName(args));
        
         final ChatMemory memory = MessageWindowChatMemory.builder()
                 .id("simple-chat-memory")
@@ -33,7 +34,12 @@ public class App {
                 .chatMemoryStore(new InMemoryChatMemoryStore())
                 .build();
 
-        final ChatSession chatSession = new ChatSessionAsync(streamingChatModel, memory);
+        final SimpleChat simpleChat = AiServices.builder(SimpleChat.class)
+            .chatModel(chatModel)
+            .chatMemory(memory)
+            .build();
+
+        final ChatSession chatSession = new ChatSessionSimpleChat(simpleChat);
         chatSession.chat();       
     }
 
