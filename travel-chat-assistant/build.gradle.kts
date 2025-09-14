@@ -24,6 +24,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("dev.langchain4j:langchain4j:$langchain4jVersion")
 	implementation("dev.langchain4j:langchain4j-open-ai:$langchain4jVersion")
+	implementation("dev.langchain4j:langchain4j-spring-boot-starter:${langchain4jVersion}-beta10")
 	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:${langchain4jVersion}-beta10")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")

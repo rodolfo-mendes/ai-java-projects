@@ -1,17 +1,16 @@
 package ai.rodolfomendes.travel.chat;
 
-import dev.langchain4j.model.chat.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
-    private ChatModel chatModel;
+    private final TravelChatAssistant assistant;
 
     @Autowired
-    public ChatController(ChatModel chatModel) {
-        this.chatModel = chatModel;
+    public ChatController(TravelChatAssistant assistant) {
+        this.assistant = assistant;
     }
 
     @GetMapping
@@ -30,7 +29,7 @@ public class ChatController {
             {{response}}
             """;
 
-        var response = chatModel.chat(message);
+        var response = assistant.chat(message);
 
         return template
             .replace("{{userMessage}}", message)
