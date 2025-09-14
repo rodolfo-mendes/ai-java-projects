@@ -8,6 +8,8 @@ group = "ai.rodolfomendes"
 version = "0.0.1-SNAPSHOT"
 description = "A friendly chat assistant to help you plan your next trip"
 
+val langchain4jVersion = "1.4.0"
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(24)
@@ -20,6 +22,9 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("dev.langchain4j:langchain4j:$langchain4jVersion")
+	implementation("dev.langchain4j:langchain4j-open-ai:$langchain4jVersion")
+	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:${langchain4jVersion}-beta10")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
