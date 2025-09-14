@@ -1,6 +1,7 @@
 package ai.rodolfomendes.contracts;
 
 public record Person(
-    String person,
+    String name,
     String profession,
-    Address address) {}
+    Address address
+) {}
