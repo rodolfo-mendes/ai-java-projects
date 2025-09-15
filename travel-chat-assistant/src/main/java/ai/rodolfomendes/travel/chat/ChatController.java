@@ -1,38 +1,34 @@
 package ai.rodolfomendes.travel.chat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
     private final TravelChatAssistant assistant;
+    private final ChatHistory chatHistory;
 
     @Autowired
-    public ChatController(TravelChatAssistant assistant) {
+    public ChatController(TravelChatAssistant assistant, ChatHistory chatHistory) {
         this.assistant = assistant;
+        this.chatHistory = chatHistory;
     }
 
-    @GetMapping
-    @RequestMapping("/hello")
-    public String hello() {
-        return "Hello!";
+    @GetMapping("/messages")
+    public List<Message> getMessages() {
+        return chatHistory.messages();
     }
 
-    @PostMapping
-    public String respondMessage(@RequestBody String message) {
-        var template = """
-            Your message:
-            {{userMessage}}
-            
-            Response:
-            {{response}}
-            """;
+    @PostMapping("/messages")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createMessage(@RequestBody NewUserMessage newUserMessage) {
+        var assistantResponse = assistant.chat(newUserMessage.text());
 
-        var response = assistant.chat(message);
-
-        return template
-            .replace("{{userMessage}}", message)
-            .replace("{{response}}", response);
+        chatHistory.addUserMessage(newUserMessage.text());
+        chatHistory.addAiMessage(assistantResponse);
     }
 }
