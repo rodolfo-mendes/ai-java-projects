@@ -11,24 +11,39 @@ import java.util.List;
 public class ChatController {
     private final TravelChatAssistant assistant;
     private final ChatHistory chatHistory;
+    private final ChatState state;
 
     @Autowired
     public ChatController(TravelChatAssistant assistant, ChatHistory chatHistory) {
         this.assistant = assistant;
         this.chatHistory = chatHistory;
+        this.state = new ChatState();
+    }
+
+    @PostMapping("/")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void start() {
+        startChatIfNotStarted();
+    }
+
+    private void startChatIfNotStarted() {
+        if (!state.isStarted()) {
+            var greetingsMessage = assistant.greetings();
+            chatHistory.addAiMessage(greetingsMessage);
+            state.start();
+        }
+    }
+
+    @PostMapping("/messages")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void sendMessage(@RequestBody NewUserMessage newUserMessage) {
+        var assistantResponse = assistant.chat(newUserMessage.text());
+        chatHistory.addUserMessage(newUserMessage.text());
+        chatHistory.addAiMessage(assistantResponse);
     }
 
     @GetMapping("/messages")
     public List<Message> getMessages() {
         return chatHistory.messages();
-    }
-
-    @PostMapping("/messages")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createMessage(@RequestBody NewUserMessage newUserMessage) {
-        var assistantResponse = assistant.chat(newUserMessage.text());
-
-        chatHistory.addUserMessage(newUserMessage.text());
-        chatHistory.addAiMessage(assistantResponse);
     }
 }
