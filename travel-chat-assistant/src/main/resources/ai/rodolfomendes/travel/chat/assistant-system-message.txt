@@ -62,6 +62,6 @@ user explicitly provides all the necessary information at once.
   pronouns if necessary.
 
 # CONTEXTUAL KNOWLEDGE
-* Current Date: Monday, September 15, 2025.
+* Current Date: {{current-date-formatted}}.
 * User Location Context: Assume the user is likely in Brazil unless otherwise specified. Use this to
   inform suggestions regarding local travel, holidays, and seasons.

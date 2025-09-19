@@ -28,7 +28,7 @@ public class ChatController {
 
     private void startChatIfNotStarted() {
         if (!state.isStarted()) {
-            var greetingsMessage = assistant.greetings();
+            var greetingsMessage = assistant.greetings(Dates.currentDateFormatted());
             chatHistory.addAiMessage(greetingsMessage);
             state.start();
         }
@@ -37,7 +37,8 @@ public class ChatController {
     @PostMapping("/messages")
     @ResponseStatus(HttpStatus.CREATED)
     public void sendMessage(@RequestBody NewUserMessage newUserMessage) {
-        var assistantResponse = assistant.chat(newUserMessage.text());
+        startChatIfNotStarted();
+        var assistantResponse = assistant.chat(newUserMessage.text(), Dates.currentDateFormatted());
         chatHistory.addUserMessage(newUserMessage.text());
         chatHistory.addAiMessage(assistantResponse);
     }
