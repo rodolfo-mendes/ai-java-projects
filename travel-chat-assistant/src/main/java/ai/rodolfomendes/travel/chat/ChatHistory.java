@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static ai.rodolfomendes.travel.chat.MessageType.AI;
-import static ai.rodolfomendes.travel.chat.MessageType.USER;
+import static ai.rodolfomendes.travel.chat.MessageType.*;
 
 @Component
 public class ChatHistory {
@@ -16,6 +15,10 @@ public class ChatHistory {
 
     public void addUserMessage(String text) {
         messages.add(new Message(nextIndex++, USER, text));
+    }
+
+    public void addSystemMessage(String text) {
+        messages.add(new Message(nextIndex++, SYSTEM, text));
     }
 
     public void addAiMessage(String text) {

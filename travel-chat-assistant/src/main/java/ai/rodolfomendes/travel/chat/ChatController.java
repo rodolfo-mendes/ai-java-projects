@@ -1,5 +1,6 @@
 package ai.rodolfomendes.travel.chat;
 
+import dev.langchain4j.guardrail.GuardrailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -35,16 +36,24 @@ public class ChatController {
     }
 
     @PostMapping("/messages")
-    @ResponseStatus(HttpStatus.CREATED)
     public void sendMessage(@RequestBody NewUserMessage newUserMessage) {
         startChatIfNotStarted();
-        var assistantResponse = assistant.chat(newUserMessage.text(), Dates.currentDateFormatted());
-        chatHistory.addUserMessage(newUserMessage.text());
-        chatHistory.addAiMessage(assistantResponse);
+
+        final var newUserMessageText = newUserMessage.text();
+        final var aiMessageText = assistant.chat(newUserMessageText, Dates.currentDateFormatted());
+
+        chatHistory.addUserMessage(newUserMessageText);
+        chatHistory.addAiMessage(aiMessageText);
     }
 
     @GetMapping("/messages")
     public List<Message> getMessages() {
         return chatHistory.messages();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(GuardrailException.class)
+    public ChatError handleGuardrailException(GuardrailException e) {
+        return new ChatError(e.getMessage());
     }
 }
