@@ -1,6 +1,6 @@
 package ai.rodolfomendes.travel;
 
-import ai.rodolfomendes.travel.chat.PiiGuardrail;
+import ai.rodolfomendes.travel.chat.service.PiiGuardrail;
 import dev.langchain4j.data.message.AiMessage;
 import org.junit.jupiter.api.Test;
 

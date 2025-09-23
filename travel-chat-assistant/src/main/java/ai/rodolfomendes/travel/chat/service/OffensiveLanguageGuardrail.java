@@ -1,4 +1,4 @@
-package ai.rodolfomendes.travel.chat;
+package ai.rodolfomendes.travel.chat.service;
 
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.guardrail.InputGuardrail;

@@ -1,5 +1,6 @@
-package ai.rodolfomendes.travel.chat;
+package ai.rodolfomendes.travel.chat.service;
 
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
@@ -14,7 +15,8 @@ public interface TravelChatAssistant {
     @OutputGuardrails({PiiGuardrail.class})
     String chat(
         @UserMessage String userMessage,
-        @V("current-date-formatted") String currentDataFormatted);
+        @V("current-date-formatted") String currentDataFormatted,
+        @MemoryId String chatId);
 
     @SystemMessage(fromResource = "assistant-system-message.txt")
     @UserMessage("""
@@ -22,5 +24,7 @@ public interface TravelChatAssistant {
         trough the process of planning a trip. Clarify the user how can you help them in each
         step of the process.
     """)
-    String greetings(@V("current-date-formatted") String currentDataFormatted);
+    String greetings(
+        @V("current-date-formatted") String currentDataFormatted,
+        @MemoryId String chatId);
 }

@@ -1,4 +1,4 @@
-package ai.rodolfomendes.travel.chat;
+package ai.rodolfomendes.travel.chat.model;
 
 import java.time.Instant;
 import java.time.ZoneId;

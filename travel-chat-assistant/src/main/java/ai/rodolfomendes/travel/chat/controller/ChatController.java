@@ -1,5 +1,7 @@
-package ai.rodolfomendes.travel.chat;
+package ai.rodolfomendes.travel.chat.controller;
 
+import ai.rodolfomendes.travel.chat.model.*;
+import ai.rodolfomendes.travel.chat.service.TravelChatAssistant;
 import dev.langchain4j.guardrail.GuardrailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,14 +13,12 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatController {
     private final TravelChatAssistant assistant;
-    private final ChatHistory chatHistory;
-    private final ChatState state;
+    private final Chat chat;
 
     @Autowired
-    public ChatController(TravelChatAssistant assistant, ChatHistory chatHistory) {
+    public ChatController(TravelChatAssistant assistant, Chat chat) {
         this.assistant = assistant;
-        this.chatHistory = chatHistory;
-        this.state = new ChatState();
+        this.chat = chat;
     }
 
     @PostMapping("/")
@@ -28,10 +28,10 @@ public class ChatController {
     }
 
     private void startChatIfNotStarted() {
-        if (!state.isStarted()) {
-            var greetingsMessage = assistant.greetings(Dates.currentDateFormatted());
-            chatHistory.addAiMessage(greetingsMessage);
-            state.start();
+        if (!chat.isStarted()) {
+            var greetingsMessage = assistant.greetings(Dates.currentDateFormatted(), chat.id().toString());
+            chat.addAiMessage(greetingsMessage);
+            chat.start();
         }
     }
 
@@ -40,15 +40,18 @@ public class ChatController {
         startChatIfNotStarted();
 
         final var newUserMessageText = newUserMessage.text();
-        final var aiMessageText = assistant.chat(newUserMessageText, Dates.currentDateFormatted());
+        final var aiMessageText = assistant.chat(
+            newUserMessageText,
+            Dates.currentDateFormatted(),
+            chat.id().toString());
 
-        chatHistory.addUserMessage(newUserMessageText);
-        chatHistory.addAiMessage(aiMessageText);
+        chat.addUserMessage(newUserMessageText);
+        chat.addAiMessage(aiMessageText);
     }
 
     @GetMapping("/messages")
     public List<Message> getMessages() {
-        return chatHistory.messages();
+        return chat.messages();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

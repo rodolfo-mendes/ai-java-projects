@@ -1,4 +1,4 @@
-package ai.rodolfomendes.travel.chat;
+package ai.rodolfomendes.travel.chat.model;
 
 public record ChatError (
         String error

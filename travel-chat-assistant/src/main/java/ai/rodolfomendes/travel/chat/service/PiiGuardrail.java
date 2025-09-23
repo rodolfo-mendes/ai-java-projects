@@ -1,10 +1,8 @@
-package ai.rodolfomendes.travel.chat;
+package ai.rodolfomendes.travel.chat.service;
 
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.guardrail.OutputGuardrail;
 import dev.langchain4j.guardrail.OutputGuardrailResult;
-import dev.langchain4j.model.output.Response;
-import dev.langchain4j.service.ModerationException;
 
 import java.util.regex.Pattern;
 
