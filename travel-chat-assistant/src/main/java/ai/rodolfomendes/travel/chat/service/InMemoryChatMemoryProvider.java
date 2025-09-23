@@ -45,6 +45,8 @@ public class InMemoryChatMemoryProvider implements ChatMemoryProvider {
                     .build();
 
                 memoryMap.put(memoryId, newMemory);
+
+                return newMemory;
             }
         }
 
