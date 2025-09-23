@@ -31,23 +31,23 @@ public class InMemoryChatMemoryProvider implements ChatMemoryProvider {
     }
 
     private ChatMemory getOrCreate(String memoryId) {
-        ChatMemory memory = memoryMap.get(memoryId);
-        if (memory != null) {
-            return memory;
+        final var existingMemory = memoryMap.get(memoryId);
+        if (existingMemory != null) {
+            return existingMemory;
         }
 
         synchronized (memoryMap) {
             if (!memoryMap.containsKey(memoryId)) {
-                memory = MessageWindowChatMemory.builder()
+                final var newMemory = MessageWindowChatMemory.builder()
                     .id(memoryId)
                     .maxMessages(100)
                     .chatMemoryStore(new InMemoryChatMemoryStore())
                     .build();
 
-                memoryMap.put(memoryId, memory);
+                memoryMap.put(memoryId, newMemory);
             }
         }
 
-        return memory;
+        return memoryMap.get(memoryId);
     }
 }
