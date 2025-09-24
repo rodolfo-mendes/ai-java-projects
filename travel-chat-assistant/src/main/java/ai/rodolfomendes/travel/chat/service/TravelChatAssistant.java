@@ -19,11 +19,7 @@ public interface TravelChatAssistant {
         @MemoryId String chatId);
 
     @SystemMessage(fromResource = "assistant-system-message.txt")
-    @UserMessage("""
-        Based on your role, respond the user with a greetings message. Briefly guide the user
-        trough the process of planning a trip. Clarify the user how can you help them in each
-        step of the process.
-    """)
+    @UserMessage(fromResource = "greetings.txt")
     String greetings(
         @V("current-date-formatted") String currentDataFormatted,
         @MemoryId String chatId);
