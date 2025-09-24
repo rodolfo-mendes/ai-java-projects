@@ -26,6 +26,7 @@ dependencies {
 	implementation("dev.langchain4j:langchain4j-open-ai:$langchain4jVersion")
 	implementation("dev.langchain4j:langchain4j-spring-boot-starter:${langchain4jVersion}-beta10")
 	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:${langchain4jVersion}-beta10")
+	implementation("org.mongodb:mongodb-driver-sync:5.6.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

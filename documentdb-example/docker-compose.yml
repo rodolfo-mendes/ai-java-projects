@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: ghcr.io/ferretdb/postgres-documentdb:17-0.106.0-ferretdb-2.5.0
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=chat-user
+      - POSTGRES_PASSWORD=chat1234
+      - POSTGRES_DB=chatdb
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:2.5.0
+    restart: on-failure
+    ports:
+      - 27017:27017
+    environment:
+      - FERRETDB_POSTGRESQL_URL=postgres://chat-user:chat1234@postgres:5432/chatdb
+
+networks:
+  default:
+    name: ferretdb
