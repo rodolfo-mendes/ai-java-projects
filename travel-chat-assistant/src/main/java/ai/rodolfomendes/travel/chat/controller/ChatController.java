@@ -3,6 +3,8 @@ package ai.rodolfomendes.travel.chat.controller;
 import ai.rodolfomendes.travel.chat.model.*;
 import ai.rodolfomendes.travel.chat.service.TravelChatAssistant;
 import dev.langchain4j.guardrail.GuardrailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
+    private final Logger logger = LoggerFactory.getLogger(ChatController.class);
     private final TravelChatAssistant assistant;
     private final Chat chat;
 
@@ -29,9 +32,10 @@ public class ChatController {
 
     private void startChatIfNotStarted() {
         if (!chat.isStarted()) {
+            String id = chat.start().toString();
+            logger.info("Chat started with id: {}", id);
             var greetingsMessage = assistant.greetings(Dates.currentDateFormatted(), chat.id().toString());
             chat.addAiMessage(greetingsMessage);
-            chat.start();
         }
     }
 

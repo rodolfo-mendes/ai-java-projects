@@ -2,6 +2,7 @@ package ai.rodolfomendes.travel.chat.service;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
@@ -13,14 +14,10 @@ import java.util.Map;
 
 public class MongoDbChatMemoryProvider implements ChatMemoryProvider {
     private final Map<String, ChatMemory> memoryMap;
-    private final MongoClient mongoClient;
-    private final String database;
-    private final String chatMemory;
+    private final MongoDatabase database;
 
-    public MongoDbChatMemoryProvider(MongoClient mongoClient, String database, String chatMemory) {
-        this.mongoClient = mongoClient;
+    public MongoDbChatMemoryProvider(MongoDatabase database) {
         this.database = database;
-        this.chatMemory = chatMemory;
         this.memoryMap = new HashMap<>();
     }
 
@@ -50,7 +47,7 @@ public class MongoDbChatMemoryProvider implements ChatMemoryProvider {
                 final var newMemory = MessageWindowChatMemory.builder()
                     .id(memoryId)
                     .maxMessages(100)
-                    .chatMemoryStore(new MongoDbChatMemoryStore(this.mongoClient, this.database, this.chatMemory))
+                    .chatMemoryStore(new MongoDbChatMemoryStore(this.database))
                     .build();
 
                 memoryMap.put(memoryId, newMemory);

@@ -3,9 +3,12 @@ package ai.rodolfomendes.travel.chat.service;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
 import dev.langchain4j.data.message.*;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,22 +16,21 @@ import java.util.List;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.include;
+import static org.springframework.data.mongodb.core.BulkOperationsExtensionsKt.upsert;
 
 public class MongoDbChatMemoryStore implements ChatMemoryStore {
-    private final MongoClient mongoClient;
-    private final String database;
-    private final String chatMemory;
+    private final Logger logger = LoggerFactory.getLogger(MongoDbChatMemoryStore.class);
+    private final MongoDatabase database;
 
-    public MongoDbChatMemoryStore(MongoClient mongoClient, String database, String chatMemory) {
-        this.mongoClient = mongoClient;
+    public MongoDbChatMemoryStore(MongoDatabase database) {
         this.database = database;
-        this.chatMemory = chatMemory;
     }
 
     @Override
     public List<ChatMessage> getMessages(Object memoryId) {
-        MongoDatabase database = mongoClient.getDatabase(this.database);
-        MongoCollection<Document> collection = database.getCollection(this.chatMemory);
+        logger.info("Retrieving messages for memory {}", memoryId);
+
+        MongoCollection<Document> collection = database.getCollection("chat");
         Document memoryDocument = collection
             .find(eq("memoryId", memoryId))
             .projection(include("messages"))
@@ -63,11 +65,13 @@ public class MongoDbChatMemoryStore implements ChatMemoryStore {
 
     @Override
     public void updateMessages(Object memoryId, List<ChatMessage> messages) {
-        MongoDatabase database = mongoClient.getDatabase(this.database);
-        MongoCollection<Document> collection = database.getCollection(this.chatMemory);
+        logger.info("Updating messages for memory {}", memoryId);
+
+        MongoCollection<Document> collection = database.getCollection("chat");
         collection.updateOne(
             eq("memoryId", memoryId),
-            set("messages", messagesToDocumentList(messages)));
+            set("messages", messagesToDocumentList(messages)),
+            new UpdateOptions().upsert(true));
     }
 
     private List<Document> messagesToDocumentList(List<ChatMessage> messages) {
@@ -88,14 +92,13 @@ public class MongoDbChatMemoryStore implements ChatMemoryStore {
             case SYSTEM -> ((SystemMessage) message).text();
             case USER -> ((UserMessage) message).singleText();
             case AI -> ((AiMessage) message).text();
-            default -> "";
+            default -> "-- no message --";
         };
     }
 
     @Override
     public void deleteMessages(Object memoryId) {
-        MongoDatabase database = mongoClient.getDatabase(this.database);
-        MongoCollection<Document> collection = database.getCollection(this.chatMemory);
+        MongoCollection<Document> collection = database.getCollection("chat");
         collection.deleteOne(eq("memoryId", memoryId));
     }
 }
