@@ -1,5 +1,14 @@
 # Travel Chat Assistant
 
+[![License: Unlicense](https://img.shields.io/badge/License-Unlicense-blue.svg)](LICENSE)
+![Java](https://img.shields.io/badge/Java-24-007396?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-6DB33F?logo=springboot&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-Kotlin%20DSL-02303A?logo=gradle&logoColor=white)
+![LangChain4j](https://img.shields.io/badge/LangChain4j-1.4.0-0B5FFF)
+![MongoDB](https://img.shields.io/badge/DB-MongoDB-47A248?logo=mongodb&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
+![OpenAI](https://img.shields.io/badge/Requires-OpenAI%20API%20Key-412991?logo=openai)
+
 A friendly AI-powered chat assistant to help you plan your next trip. It exposes a simple REST API backed by Spring Boot and LangChain4j, with chat memory stored in MongoDB and basic input/output guardrails.
 
 ## Overview
