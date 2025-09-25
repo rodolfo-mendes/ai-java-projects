@@ -159,10 +159,9 @@ Containers
 - To switch to in-memory chat memory (non-persistent), MemoryConfiguration shows a commented example using InMemoryChatMemoryProvider.
 
 ## License
-TODO: Add a LICENSE file and specify the license (e.g., MIT, Apache-2.0). Until then, the default is unspecified.
+This project is released under The Unlicense (public domain). See the LICENSE file for full text and details.
 
 ## Roadmap / TODOs
-- Decide and document the license
 - Add API examples in OpenAPI/Swagger format
 - Provide CI workflow for build and tests
 - Add more robust moderation guardrails and configurable model name
