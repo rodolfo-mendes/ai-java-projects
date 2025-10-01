@@ -1,4 +1,4 @@
-package ai.rodolfomendes.spring_boot_chat;
+package ai.rodolfomendes.chat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
