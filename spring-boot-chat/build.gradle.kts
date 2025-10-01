@@ -20,6 +20,11 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
+
+	// Langchain4j and Spring integration dependencies
+	implementation("dev.langchain4j:langchain4j-spring-boot-starter:1.6.0-beta12")
+	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:1.6.0-beta12")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
